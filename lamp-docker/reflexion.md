@@ -1,4 +1,4 @@
-# Reflexion — MiniApp de Tareas
+# Reflexion — MiniApp de Biblioteca
 
 **Nombre:** Noel Morato Muñoz
 
