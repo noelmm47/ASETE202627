@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/../app/Includes/auth.php';
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-require __DIR__ . '/includes/header.php';
+require __DIR__ . '/../app/Includes/header.php';
 
 $usuarios = db()->query('SELECT id, email, rol, creado_en FROM usuarios ORDER BY id')->fetchAll();
 ?>
@@ -46,4 +46,4 @@ $usuarios = db()->query('SELECT id, email, rol, creado_en FROM usuarios ORDER BY
   <?php endforeach; ?>
 </table>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/../app/Includes/footer.php'; ?>

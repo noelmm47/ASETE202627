@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/Prestable.php';
-require_once __DIR__ . '/Prestable.php';
 require_once __DIR__ . '/traits/TieneFechas.php';
 require_once __DIR__ . '/traits/Loggable.php';
 
