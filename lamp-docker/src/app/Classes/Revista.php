@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/MaterialBiblioteca.php';
+declare(strict_types=1);
+
+namespace App\Classes;
+//require_once __DIR__ . '/MaterialBiblioteca.php';
 
 class Revista extends MaterialBiblioteca {
     private int $numero;

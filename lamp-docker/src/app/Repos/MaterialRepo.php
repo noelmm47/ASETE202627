@@ -1,8 +1,17 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+declare(strict_types=1);
+
+namespace App\Repos;
+
+/*require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../classes/Libro.php';
 require_once __DIR__ . '/../classes/Revista.php';
-require_once __DIR__ . '/../classes/DVD.php';
+require_once __DIR__ . '/../classes/DVD.php';*/
+use App\Classes\DVD;
+use App\Classes\Libro;
+use App\Classes\MaterialBiblioteca;
+use App\Classes\Revista;
+use App\Config\db;
 
 class MaterialRepo {
 
