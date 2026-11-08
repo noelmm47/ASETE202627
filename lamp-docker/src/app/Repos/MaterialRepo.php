@@ -3,39 +3,54 @@ declare(strict_types=1);
 
 namespace App\Repos;
 
-/*require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../classes/Libro.php';
-require_once __DIR__ . '/../classes/Revista.php';
-require_once __DIR__ . '/../classes/DVD.php';*/
 use App\Classes\DVD;
+
 use App\Classes\Libro;
+
 use App\Classes\MaterialBiblioteca;
+
 use App\Classes\Revista;
+
+use App\Exceptions\MaterialNoEncontradoException;
+
+use App\Exceptions\LimitePrestamosException;
+
 use App\Config\db;
 
-class MaterialRepo {
-
-    public function findAll(): array {
+class MaterialRepo
+{
+    public function findAll(): array
+    {
         $stmt = db()->query('SELECT * FROM materiales ORDER BY tipo, titulo');
         $materiales = [];
         foreach ($stmt->fetchAll() as $fila) {
+            //error_log(print_r($fila['tipo']));
+            //echo "<script>console.log('Tipo de la fila: " . $fila['tipo'] . "' );</script>";
             $materiales[] = $this->hidratar($fila);
         }
         return $materiales;
     }
 
-    public function findById(int $id): ?MaterialBiblioteca {
+    public function findById(int $id): MaterialBiblioteca
+    {
         $stmt = db()->prepare('SELECT * FROM materiales WHERE id = ?');
         $stmt->execute([$id]);
         $fila = $stmt->fetch();
-        return $fila ? $this->hidratar($fila) : null;
+
+        if ($fila === false) {
+            //echo "<script>console.log(" . print_r($fila) . ");</script>";
+            throw new MaterialNoEncontradoException($id);
+        }
+
+        return $this->hidratar($fila);
     }
 
     /**
      * Convierte una fila de BBDD en el objeto PHP correcto.
      * También hidrata la fecha de creación desde 'creado_en'.
      */
-    private function hidratar(array $fila): MaterialBiblioteca {
+    private function hidratar(array $fila): MaterialBiblioteca
+    {
         $material = match ($fila['tipo']) {
             'libro'   => new Libro(
                 $fila['titulo'], $fila['autor'], (int)$fila['anio'],
@@ -55,19 +70,22 @@ class MaterialRepo {
         return $material;
     }
 
-    public function setDisponible(int $id, bool $disponible): void {
+    public function setDisponible(int $id, bool $disponible): void
+    {
         $stmt = db()->prepare('UPDATE materiales SET disponible = ? WHERE id = ?');
         $stmt->execute([$disponible ? 1 : 0, $id]);
     }
 
-    public function registrarPrestamo(int $materialId, int $usuarioId): void {
+    public function registrarPrestamo(int $materialId, int $usuarioId): void
+    {
         $stmt = db()->prepare(
             'INSERT INTO prestamos (material_id, usuario_id) VALUES (?, ?)'
         );
         $stmt->execute([$materialId, $usuarioId]);
     }
 
-    public function findDisponibles(): array{
+    public function findDisponibles(): array
+    {
         $stmt= db()->query('SELECT * from materiales where disponible=1 ORDER BY titulo');
         $materiales=[];
         foreach($smtm->fetchAll() as $material){
@@ -76,8 +94,9 @@ class MaterialRepo {
         return $materiales;
     }
 
-    public function findByTipo(String $tipo): array{
-        $smtm= bd() -> prepare('SELECT * FROM materiales WHERE tipo=? ORDER BY titulo') -> execute([$tipo]);
+    public function findByTipo(String $tipo): array
+    {
+        $smtm= db() -> prepare('SELECT * FROM materiales WHERE tipo=? ORDER BY titulo') -> execute([$tipo]);
         $materiales=[];
 
         foreach($smtm->fetchAll() as $material){
@@ -86,8 +105,9 @@ class MaterialRepo {
         return $materiales;
     }
 
-    public function contarPorTipo(): array{
-        $smtm= bd()->query('SELECT tipo, COUNT(*) as cantidad FROM materiales GROUP BY tipo');
+    public function contarPorTipo(): array
+    {
+        $smtm= db()->query('SELECT tipo, COUNT(*) as cantidad FROM materiales GROUP BY tipo');
         $out= [];
         foreach($smtm->fetchAll() as $element){
             $out[$element['tipo']]= (int)$elemento['cantidad']; //tipo -> cantidad
@@ -95,7 +115,8 @@ class MaterialRepo {
         return $out;
     }
 
-    public function crear(MaterialBiblioteca $m): int{
+    public function crear(MaterialBiblioteca $m): int
+    {
         $material = match($m->tipoMaterial()){
             'Libro' => new Libro($m->$titulo,
                                 $m->$autor,
@@ -119,7 +140,8 @@ class MaterialRepo {
         return (int)(bd()->query('SELECT id FROM materiales WHERE id = (SELECT COUNT(*) FROM materiales)')->fetch()); //TODO ¿Funciona bien?
     }
 
-    private function persistencia(MaterialBiblioteca $m):void{ //TODO probar
+    private function persistencia(MaterialBiblioteca $m):void
+    {
         $tipo= $m->tipoMaterial();
         $params= match($tipo){
             'Libro' => [$m->$titulo,
@@ -147,22 +169,32 @@ class MaterialRepo {
         }elseif($tipo=='DVD'){
             persistenciaDVD($params);
         }
-
-        echo 'Éxito.';
     }
 
-    private function persistenciaLibro(array $params):void{
-        $stmt= bd()->prepare('INSERT INTO material(titulo, autor, anio, isbn, editorial, disponible) VALUES ?, ?, ?, ?, ?, ?');
+    private function persistenciaLibro(array $params):void
+    {
+        $stmt= db()->prepare('INSERT INTO material(titulo, autor, anio, isbn, editorial, disponible) VALUES ?, ?, ?, ?, ?, ?');
         $smtm -> execute($params);
     }
 
-    private function persistenciaRevista(array $params):void{
-        $stmt= bd()->prepare('INSERT INTO material(titulo, autor, anio, numero, disponible) VALUES ?, ?, ?, ?, ?');
+    private function persistenciaRevista(array $params):void
+    {
+        $stmt= db()->prepare('INSERT INTO material(titulo, autor, anio, numero, disponible) VALUES ?, ?, ?, ?, ?');
         $smtm -> execute($params);
     }
 
-    private function persistenciaDVD(array $params):void{
-        $stmt= bd()->prepare('INSERT INTO material(titulo, autor, anio, duracionMin, disponible) VALUES ?, ?, ?, ?, ?');
+    private function persistenciaDVD(array $params):void
+    {
+        $stmt= db()->prepare('INSERT INTO material(titulo, autor, anio, duracionMin, disponible) VALUES ?, ?, ?, ?, ?');
         $smtm -> execute($params);
+    }
+
+    public function contarPrestamosActivos(int $id_usuario): int
+    {
+        $smtm=  db() -> prepare('SELECT COUNT(*) FROM prestamos WHERE usuario_id= ?');
+        $smtm -> execute([$id_usuario]); //Devuelve true, no el COUNT
+        $ret= $smtm -> fetch();
+        //echo "<script>console.log(" . print_r($ret) . ");</script>";
+        return $ret['COUNT(*)']; 
     }
 }

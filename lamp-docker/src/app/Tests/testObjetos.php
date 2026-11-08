@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 require_once __DIR__ . '/classes/Libro.php';
 
 $l = new Libro('El Quijote', 'Cervantes', 1605, '978-8420412146');

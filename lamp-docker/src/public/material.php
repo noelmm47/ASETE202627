@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Includes/auth.php';
+require_once __DIR__ . '/../app/Includes/exceptions.php';
 
 requireLogin();
 
 use App\Exceptions\MaterialNoEncontradoException;
+
 use App\Repos\MaterialRepo;
 
 $id = (int)($_GET['id'] ?? 0);
@@ -14,12 +16,13 @@ try {
     $repo = new MaterialRepo();
     $material = $repo->findById($id);
 } catch (MaterialNoEncontradoException $e) {
-    // ... igual que antes ... ???
-}
-
-if (!$material) {
     http_response_code(404);
-    exit('Material no encontrado');
+    require __DIR__ . '/../app/Includes/header.php';
+    echo '<h1>Material no encontrado</h1>';
+    echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<a href="/index.php">Volver al catálogo</a>';
+    require __DIR__ . '/../app/Includes/footer.php';
+    exit;
 }
 
 require __DIR__ . '/../app/Includes/header.php';
@@ -39,7 +42,12 @@ require __DIR__ . '/../app/Includes/header.php';
 <?php if ($material->isDisponible()): ?>
   <form method="POST" action="prestar.php">
     <input type="hidden" name="material_id" value="<?= $material->getId() ?>">
-    <button>Pedir prestado</button>
+    <button <?php //if ($repo->contarPrestamosActivos(-)>2) echo 'disabled="disabled"';?>>
+      Pedir prestado</button>
+    <?php
+      /*if($repo->contarPrestamosActivos(-)>2)
+        echo "<p>Ha alcanzado el máximo de préstamos.</p>";*/
+    ?>
   </form>
 <?php endif; ?>
 

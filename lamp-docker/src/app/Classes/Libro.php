@@ -2,26 +2,40 @@
 declare(strict_types=1);
 
 namespace App\Classes;
-//require_once __DIR__ . '/MaterialBiblioteca.php';
 
-
-class Libro extends MaterialBiblioteca {
+class Libro extends MaterialBiblioteca
+{
 
     private string $isbn;
     private string $editorial='';
 
-    public function getIsbn(): string { return $this->isbn; }
+    public function getIsbn(): string
+    {
+        return $this->isbn; 
+    }
 
-    public function getEditorial(): string {return $this->editorial;}
-    public function setEditorial(string $editorial): void {$this->editorial = $editorial;}
+    public function getEditorial(): string
+    {
+        return $this->editorial;
+    }
 
-    public function tipoMaterial(): string { return 'Libro'; }
+    public function setEditorial(string $editorial): void
+    {
+        $this->editorial = $editorial;
+    }
 
-    public function mostrarFicha(): string {
+    public function tipoMaterial(): string
+    {
+        return 'Libro';
+    }
+
+    public function mostrarFicha(): string
+    {
         return parent::mostrarFicha() . ', ISBN: ' . $this->isbn;
     }
 
-    public function resumen(): string{
+    public function resumen(): string
+    {
         return parent::resumen();
     }
 

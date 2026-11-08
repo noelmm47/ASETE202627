@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 namespace App\Classes;
-//require_once __DIR__ . '/MaterialBiblioteca.php';
 
-class DVD extends MaterialBiblioteca {
+class DVD extends MaterialBiblioteca
+{
     private int $duracionMin;
 
     public function __construct(
@@ -15,11 +15,23 @@ class DVD extends MaterialBiblioteca {
         $this->duracionMin = $duracionMin;
     }
 
-    public function getDuracionMin(): int { return $this->duracionMin; }
-    public function tipoMaterial(): string { return 'DVD'; }
-    public function mostrarFicha(): string {
+    public function getDuracionMin(): int
+    {
+        return $this->duracionMin;
+    }
+
+    public function tipoMaterial(): string
+    {
+        return 'DVD';
+    }
+
+    public function mostrarFicha(): string
+    {
         return parent::mostrarFicha() . ' · ' . $this->duracionMin . ' min';
     }
 
-    public function diasPrestamo(): int { return 3; }
+    public function diasPrestamo(): int
+    {
+        return 3;
+    }
 }

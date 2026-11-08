@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace App\Classes;
 //require_once __DIR__ . '/MaterialBiblioteca.php';
 
-class Revista extends MaterialBiblioteca {
+class Revista extends MaterialBiblioteca
+{
     private int $numero;
 
     public function __construct(
@@ -17,7 +18,8 @@ class Revista extends MaterialBiblioteca {
 
     public function getNumero(): int { return $this->numero; }
     public function tipoMaterial(): string { return 'Revista'; }
-    public function mostrarFicha(): string {
+    public function mostrarFicha(): string
+    {
         return parent::mostrarFicha() . ' · Nº ' . $this->numero;
     }
 }

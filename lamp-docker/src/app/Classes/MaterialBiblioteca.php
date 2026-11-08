@@ -6,9 +6,10 @@ namespace App\Classes;
 require_once __DIR__ . '/traits/TieneFechas.php';
 require_once __DIR__ . '/traits/Loggable.php';*/
 
-class MaterialBiblioteca implements Prestable{
-    use App\Classes\Traits\TieneFechas;
-    use App\Classes\Traits\Loggable;
+class MaterialBiblioteca implements Prestable
+{
+    use Traits\TieneFechas;
+    use Traits\Loggable;
     
     private int $id;
     private string $titulo;
@@ -44,28 +45,33 @@ class MaterialBiblioteca implements Prestable{
     public function setAnio(?int $a): void { $this->anio = $a; }
     public function setAutor(string $a): void { $this->autor = $a; }
 
-    public function mostrarFicha(): string {
+    public function mostrarFicha(): string
+    {
         $anio = $this->anio ?? 's/f';
         return sprintf('[%s] %s — %s (%s) %d',
             $this->tipoMaterial(), $this->titulo, $this->autor, $anio, $this->id
         );
     }
 
-    public function tipoMaterial(): string {
+    public function tipoMaterial(): string
+    {
         return 'material';
     }
 
-    public function antiguedad(): int {
+    public function antiguedad(): int
+    {
         if ($this->anio === null) return 0;
         return (int)date('Y') - $this->anio;
     }
 
-    public function resumen(): string{
+    public function resumen(): string
+    {
         return '[' . $this->tipoMaterial() . ']: ' . $this->titulo . ', ' . $this->autor . ', ' . $this->id;
     }
 
     /* De la interfaz Prestable */
-    public function prestar(): bool { 
+    public function prestar(): bool
+    { 
         /*$disponible = isDisponible(); //si disponible es falso (prestado), devuelve false. Si disponible es cierto, devuelve true
         $this->disponible = false;
         return $disponible;*/
@@ -74,9 +80,8 @@ class MaterialBiblioteca implements Prestable{
         return true;
     }
 
-    public function puedePrestarse(): bool{
+    public function puedePrestarse(): bool
+    {
         return $this->disponible && $this->anio?:2000 <= 2010;
     }
-
-
 }

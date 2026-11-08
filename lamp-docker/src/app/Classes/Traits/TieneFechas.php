@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 namespace App\Classes\Traits;
-trait TieneFechas {
+
+trait TieneFechas
+{
     private ?string $fechaCreacion = null;
 
     public function setFechaCreacion(?string $fecha): void {

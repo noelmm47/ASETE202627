@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Includes/auth.php';
+//require_once __DIR__ . '/../app/Includes/exceptions.php';
 
 use App\Exceptions\MaterialNoDisponibleException;
+
 use App\Exceptions\MaterialNoEncontradoException;
+
+use App\Exceptions\LimitePrestamosException;
+
+use App\Includes\auth;
+
 use App\Repos\MaterialRepo;
+
 use App\Services\PrestamoService;
 
 requireLogin();
@@ -19,13 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id = (int)($_POST['material_id'] ?? 0);
 
 try {
-    $service = new PrestamoService(new MaterialRepo());
+    $repo = new MaterialRepo();
+    //echo "<script>console.log(Préstamos: " . $repo ->contarPrestamosActivos(currentUser()['id']) . ");</script>";
+    if($repo -> contarPrestamosActivos(currentUser()['id']) >= 3)
+        throw new LimitePrestamosException();
+    $service = new PrestamoService($repo);
     $service->prestar($id, currentUser()['id']);
 
     header('Location: /material.php?id=' . $id);
     exit;
 
-} catch (MaterialNoEncontradoException $e) {
+} catch (MaterialNoEncontradoException | LimitePrestamosException $e) {
     http_response_code(404);
     $error = $e->getMessage();
 } catch (MaterialNoDisponibleException $e) {

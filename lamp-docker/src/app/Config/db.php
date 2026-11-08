@@ -1,5 +1,8 @@
 <?php
-function db(): PDO {
+declare(strict_types=1);
+
+function db(): PDO
+{
     static $pdo = null;
     if ($pdo === null) {
         $dsn = 'mysql:host=mariadb;dbname=lamp_db;charset=utf8mb4';

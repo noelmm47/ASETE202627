@@ -1,43 +1,59 @@
-# Reflexion — MiniApp de Biblioteca
+# Reflexión — Actividad 2.2 (autoloading, namespaces y excepciones)
 
 **Nombre:** Noel Morato Muñoz
 
-## 1. Encapsulación: ¿por qué los atributos de MaterialBiblioteca son private? Pon un ejemplo de bug que evitarías.
+## 1. Namespaces: ¿qué problema resuelven? Pon un ejemplo de colisión.
 
-Para que no sean accesibles y modificables por otras clases, incluidas las que heredan de MaterialBiblioteca. Por ejemplo cuando se hidraten los datos no ocurran cambios por parte de otras clases y afecte el resultado de diferentes operaciones o se afecte a la base de datos cuando se haga persistencia.
+Los namespaces definen un lugar lógico de almacenamiento de manera que desde otros archivos se pueda acceder fácilmente al archivo. Esto es especialmente útil cuando tienes archivos que se llaman igual; su localización lógica los diferencia entre sí y permite usar ambos sin confundirlos.
 
-## 2. Herencia: ¿qué ventaja tiene que Libro, Revista y DVD hereden de MaterialBiblioteca?
+## 2. PSR-4: explica cómo Composer sabe que `App\Classes\Libro` está en `app/Classes/Libro.php`.
 
-Heredan todos sus atributos y métodos, aunque solo pueden acceder directamente a los que tengan nivel de protección protected o public; para los privados tendrán que usar la palabra clave parent e invocar desde él.
-De esta manera no hace falta repetir código, hay reutilización.
+Composer conoce que App\Classes\Libro está en app/Classes/Libro.php porque en el archivo Composer.json hay un campo llamado psr-4 en el que se define la correspondencia entre App\ y app/. Gracias a Composer.json se consigue localizar físicamente los archivos a través de sus namespaces.
 
-## 3. Polimorfismo: explica qué pasa cuando el foreach del catálogo llama a $m->mostrarFicha() sin saber el tipo.
+## 3. Autoloading: ¿qué diferencia hay entre `require_once` manual y el cargador de Composer?
 
-Cuando el foreach del catálogo llama a $m->mostrarFicha() sin saber el tipo, ejecuta el método mostrarFicha() dependiendo del tipo que le llegue durante la ejecución. mostrarFicha() es un método de MaterialBiblioteca que se hereda a Libro, Revista y DVD y es sobreescrita en cada una; por lo que dependiendo del tipo dinámico, tendrá un comportamiento u otro.
+El require_once manual carga todo el código del archivo especificado a partir de la línea en la que se encuentre la instrucción. El cargador del Composer, por lo que entiendo, carga automáticamente lo que se necesita de los archivos que se incluyen con el "use".
 
-## 4. Interfaces: ¿qué diferencia hay entre Prestable (interfaz) y Loggable (trait)? ¿Cuándo usarías cada uno?
+## 4. Excepciones: ¿qué ventaja tiene lanzar `MaterialNoEncontradoException` en lugar de devolver `null`?
 
-La interfaz Prestable se define como un contrato; deja cabeceras de funciones para que las implemente la clase que implemente la interfaz. De esta manera, varias clases que implementen la misma interfaz pueden tener objetivos o comportamientos parecidos, pero no iguales.
-El trait Loggable funciona como la herencia de una superclase, heredando los atributos y métodos ya implementados cuando usas el trait.
+Al lanzar MaterialNoEncontradoException el programa tiene una idea más concreta del problema y se puede manejar de forma concreta para que, en vez de mostrar un fatal error, muestre un mensaje amigable al usuario.
 
-Por tanto, la interfaz la usarías cuando quieres darle un comportamiento concreto a una clase y el trait cuando necesitas usar los atributos y funcionalidades del trait para completar tu clase o varias sin repetir código y sin usar herencia de más de una clase.
+## 5. Try/catch: ¿dónde capturas las excepciones y por qué ahí? ¿Qué pasa si no las capturas?
 
-## 5. Repositorio: ¿por qué el SQL está en MaterialRepo y no dentro de Libro?
+Las excepciones se deben capturar en los puntos de entrada de la web o aplicación, porque funcionan como los controladores del conjunto de archivo que se usan (no estoy seguro, pero deduzco que es por ser los que inician las llamadas de los otros archivos y donde van a llegar todas las excepciones sin hacer un enredo de try-catch en varios lugares diferentes).
+Si no se capturan, sale un fatal error que no queremos que le salga al cliente.
 
-El SQL está en MaterialRepo  y no en Libro ni en ningún otro sitio por cuestiones de modularidad y reutilización. MaterialRepo funciona como la clase de utilidades con funciones de hidratación y persistencia. Al centralizar esas operaciones en una sola clase, accesible para quienes las necesiten, se mantiene un código más limpio y ordenado.
+## 6. `Throwable` vs `Exception`: ¿cuándo usarías cada uno?
 
-## 6. Integración: ¿cómo se relacionan los objetos con $_SESSION['user'] en prestar.php?
+Throwable es la clase que abarca tanto Errores como Exception, es decir, todo tipo de errores que afectan al programa. Las Exceptions son un tipo de Throwable que se dan por errores del programa en sí o el dominio.
+Por tanto, usaría un Throwable en un catch en el que quiero controlar todo tipo de Errores y Excepciones, mientras que usaría Exception y sus subclases para controlar excepciones cada vez más específicas de forma más personalizada.
 
-Utilizando los métodos login() y currentUser() de auth.php.
-Se requiere confirmar el login para acceder a prestar.php, y utiliza el método currentUser(), qué devuelve el usuario almacenado en la sesión (función de auth.php), para hacer persistencia de objetos.
+## 7. `finally`: pon un ejemplo de tu código donde se ejecute `finally`. ¿Por qué es útil?
 
-## 7. Java vs PHP: cita tres diferencias concretas que hayas notado.
+El ejemplo más fácil es el método prestar del archivo PrestamoService.php.
+En este método puede darse un MaterialNoDisponibleException, y se utiliza un try-finally para que, haya excepción o no, siempre se escriba en un log el intento de préstamo al final del método.
 
+## 8. PSR-12: cita tres reglas que hayas aplicado y explica por qué mejoran la legibilidad.
 
-1- La forma de acceder a métodos y atributos de un objeto o clase.
-2- Uso de 'includes' en vez de imports para señalar la necesidad de propiedades o métodos de otro archivo
-3- Uso de 'uses' para la implementación de una interfaz o un trait en una clase.
+1- Espacios en blanco tras el namespace y cada sentencia use.
+2- Apertura de llaves en línea siguiente del encabezado de clases y métodos.
+3- Especificar el tipo de los parámetros de los métodos y el tipo que devuelven, así como su nivel de seguridad.
+Estas mejoran la legibilidad al hacer el código más espaciado entre sentencias y especificar los tipos que esperan los métodos, lo que esperan devolver, y decir explícitamente quiénes pueden acceder a ellos.
 
-## 8. Diseño: si mañana añadieras Mapa como nuevo tipo, ¿qué archivos tocarías?
+## 9. `strict_types`: ¿qué cambia respecto al comportamiento por defecto? ¿Por qué es una buena práctica?
 
-Además de tocar el archivo Mapa.php, porque tendría que crear la clase con sus atributos y métodos; cambiaría MaterialRepo, pues para la persistencia e hidratación hace falta especificar el tipo del material.
+El strict_types detiene la conversión silenciosa de PHP. Por ejemplo, PHP puede convertir el string "3" al int 3 si es lo que pide un método u operación.
+Detenerla es una buena práctica porque el mandar una variable de un tipo inválido puede acabar explotando a largo plazo, por mucho que PHP haga conversiones silenciosas, con un fatal error.
+
+## Ampliaciones resueltas
+
+Marcadas: ninguna
+
+Completé la Ampliación 1. Creé en MaterialRepo la función contarPrestamosActivos pasando por parámetro el id del usuario, y preparando una sentencia sql que devuelve la cantidad de prestamos asociados al id del usuario. Este método es invocado de prestar.php y lanza una excepción si la cantidad de prestamos es igual o mayor a 3. Esta excepción es LimitePrestamosException.
+
+## Autoevaluación
+
+He aprendido porqué son importantes los namespaces, el estándar PSR-4 y cómo aplicar excepciones en un programa PHP.
+
+Sin embargo, a la hora de comprobar la integración del programa tuve errores y muchos problemas para acceder al error_log. Tuve que comentar la sentencia de inclusión del archivo exceptions.php para que me explicase en pantalla el problema.
+En conclusión, necesito apoyo para manejar el error_log porque sigo sin encontrarlo incluso tras buscar por internet.
