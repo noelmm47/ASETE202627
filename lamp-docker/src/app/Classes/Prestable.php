@@ -6,7 +6,7 @@ namespace App\Classes;
 interface Prestable
 {
     public function prestar(): bool;
-    public function devolver(): void;
+    public function devolver(): bool;
     public function diasPrestamo(): int;
     public function puedePrestarse(): bool;
 }

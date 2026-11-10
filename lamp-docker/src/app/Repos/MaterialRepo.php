@@ -84,6 +84,14 @@ class MaterialRepo
         $stmt->execute([$materialId, $usuarioId]);
     }
 
+    public function eliminarPrestamo(int $materialId, int $usuarioId)
+    {
+        $stmt = db()->prepare(
+            'DELETE FROM prestamos WHERE material_id= ? AND usuario_id= ?'
+        );
+        $stmt->execute([$materialId, $usuarioId]);   
+    }
+
     public function findDisponibles(): array
     {
         $stmt= db()->query('SELECT * from materiales where disponible=1 ORDER BY titulo');
@@ -196,5 +204,16 @@ class MaterialRepo
         $ret= $smtm -> fetch();
         //echo "<script>console.log(" . print_r($ret) . ");</script>";
         return $ret['COUNT(*)']; 
+    }
+
+    public function estaPrestadoPor(int $id_usuario, int $id_material): bool
+    {
+        $smtm=  db() -> prepare('SELECT material_id FROM prestamos WHERE usuario_id= ? AND material_id = ?');
+        $smtm -> execute([$id_usuario, $id_material]); //Devuelve true, no el COUNT
+        $ret= $smtm -> fetch(); //A veces me devuelve array, a veces me devuelve bool, no lo entiendo
+        //echo "<script>console.log(" . print_r($ret) . ")</script>";
+        if($ret)
+            return $ret['material_id'] === $id_material;
+        return false;
     }
 }

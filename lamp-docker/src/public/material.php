@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Includes/auth.php';
-require_once __DIR__ . '/../app/Includes/exceptions.php';
+//require_once __DIR__ . '/../app/Includes/exceptions.php';
 
 requireLogin();
 
@@ -39,16 +39,29 @@ require __DIR__ . '/../app/Includes/header.php';
   <dt>Estado</dt><dd><?= $material->isDisponible() ? 'Disponible' : 'Prestado' ?></dd>
 </dl>
 
-<?php if ($material->isDisponible()): ?>
-  <form method="POST" action="prestar.php">
+<?php //if ($material->isDisponible()): ?>
+  <form method="POST" action="prestar.php"> <!-- FORM Prestar -->
     <input type="hidden" name="material_id" value="<?= $material->getId() ?>">
-    <button <?php //if ($repo->contarPrestamosActivos(-)>2) echo 'disabled="disabled"';?>>
+    <button <?php if ($repo->contarPrestamosActivos(currentUser()['id'])>2
+                      || !$material->isDisponible()) echo 'disabled="disabled"';
+          //Si tiene demasiados préstamos o no está disponible?>>
       Pedir prestado</button>
     <?php
-      /*if($repo->contarPrestamosActivos(-)>2)
-        echo "<p>Ha alcanzado el máximo de préstamos.</p>";*/
+      if($repo->contarPrestamosActivos(currentUser()['id'])>2)
+        echo "<p>Ha alcanzado el máximo de préstamos.</p>";
     ?>
   </form>
-<?php endif; ?>
+  <br>
+  <form method="POST" action="devolver.php"> <!-- FORM devolver -->
+    <input type="hidden" name="material_id" value="<?= $material->getId() ?>">
+    <button <?php if (!($repo->estaPrestadoPor(currentUser()['id'], $id))) echo 'disabled="disabled"';
+    //Si el usuario no es quien lo ha tomado prestado, se desabilita el botón?>>
+      Devolver</button>
+    <?php
+      if(!$material->isDisponible())
+        echo "<p>El material ha sido prestado, no está disponible.</p>";
+    ?>
+  </form>
+<?php //endif; ?>
 
 <?php require __DIR__ . '/../app/Includes/footer.php'; ?>

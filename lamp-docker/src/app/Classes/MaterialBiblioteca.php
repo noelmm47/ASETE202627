@@ -37,7 +37,6 @@ class MaterialBiblioteca implements Prestable
     public function getAnio(): ?int       { return $this->anio; }
     public function isDisponible(): bool  { return $this->disponible; }
     public function isAntiguo(): bool  { return antiguedad() > 50; }
-    public function devolver(): void { $this->disponible = true; }
     public function diasPrestamo(): int { return 15; }
 
     public function setTitulo(string $t): void { $this->titulo = $t; }
@@ -78,6 +77,13 @@ class MaterialBiblioteca implements Prestable
         if (!$this->disponible) return false;
         $this->disponible = false;
         return true;
+    }
+
+    public function devolver(): bool
+    { 
+        if (!$this->disponible) return true;
+        $this->disponible = true;
+        return false;
     }
 
     public function puedePrestarse(): bool

@@ -47,9 +47,10 @@ Detenerla es una buena práctica porque el mandar una variable de un tipo invál
 
 ## Ampliaciones resueltas
 
-Marcadas: ninguna
-
 Completé la Ampliación 1. Creé en MaterialRepo la función contarPrestamosActivos pasando por parámetro el id del usuario, y preparando una sentencia sql que devuelve la cantidad de prestamos asociados al id del usuario. Este método es invocado de prestar.php y lanza una excepción si la cantidad de prestamos es igual o mayor a 3. Esta excepción es LimitePrestamosException.
+
+Lo siguiente no es una ampliación de la tarea, pero algo que debería haber hecho hace varias tareas: Devoluciones. Creé devolver.php, con la función opuesta a prestar.php.
+Para devolver un material, borro la fila de la tabla Prestamos con el mismo id de material que el material prestado y el mismo id de usuario que el usuario actual. Esto implica que solo el usuario que ha cogido prestado el material puede devolverlo, y nadie más.
 
 ## Autoevaluación
 
@@ -57,3 +58,6 @@ He aprendido porqué son importantes los namespaces, el estándar PSR-4 y cómo 
 
 Sin embargo, a la hora de comprobar la integración del programa tuve errores y muchos problemas para acceder al error_log. Tuve que comentar la sentencia de inclusión del archivo exceptions.php para que me explicase en pantalla el problema.
 En conclusión, necesito apoyo para manejar el error_log porque sigo sin encontrarlo incluso tras buscar por internet.
+
+También quiero mencionar que acabo de implementar las devoluciones, porque creo que solo se ha propuesto como ampliación opcional en tareas previas, y para hacerlas borro los préstamos de las Bases de Datos.
+Entiendo que se podría querer que permanezca un historial de préstamos por lo que sea. ¿Podría entonces, en vez de condicionar el botón de prestar por el contenido de la Base de Datos, condicionarlo por el estado de la variable "disponible" del material? Suena menos fiable, pero no se me ocurre otra manera igual de simple. Si no, tendría que comprobar tanto la tabla de préstamos como una tabla de devoluciones... qué también podría querer en un caso real mantener el historial, así que tendría el mismo problema.

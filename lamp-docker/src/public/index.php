@@ -22,9 +22,9 @@ require __DIR__ . '/../app/Includes/header.php';
   <li>
     <?= htmlspecialchars($m->mostrarFicha()) ?>
     — <?= $m->isDisponible() ? '✅ Disponible' : '❌ Prestado' ?>
-    <?php if ($m->isDisponible()): ?>
-      · <a href="/material.php?id=<?= $m->getId() ?>">Ver ficha</a>
-    <?php endif; ?>
+    <?php //if ($m->isDisponible()): ?>
+      <!--·--> <a href="/material.php?id=<?= $m->getId() ?>">Ver ficha</a>
+    <?php //endif; ?>
   </li>
   <li><b>RESUMEN:</b> <?= htmlspecialchars($m->resumen()) ?></li>
   <br>
