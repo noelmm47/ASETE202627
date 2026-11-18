@@ -1,0 +1,10 @@
+# Secretos: nunca al repositorio
+.env
+proyecto/.env
+
+# Dependencias de Composer: se reinstalan con composer install
+proyecto/vendor/
+
+# Logs y caché local
+proyecto/storage/logs/
+proyecto/storage/framework/cache/
